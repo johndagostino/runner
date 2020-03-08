@@ -23,6 +23,7 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
         public const String FetchDepth = "fetch-depth";
         public const String GeneratedId = "generated-id";
         public const String GitHub = "github";
+        public const String HashFiles = "hashFiles";
         public const String Id = "id";
         public const String If = "if";
         public const String Image = "image";

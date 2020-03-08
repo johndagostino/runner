@@ -93,7 +93,8 @@
                 "steps",
                 "job",
                 "runner",
-                "env"
+                "env",
+                "hashFiles(1,255)"
             ],
             "string": {}
         },

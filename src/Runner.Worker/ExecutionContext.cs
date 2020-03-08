@@ -53,6 +53,7 @@ namespace GitHub.Runner.Worker
         IList<String> FileTable { get; }
         StepsContext StepsContext { get; }
         DictionaryContextData ExpressionValues { get; }
+        IList<IFunctionInfo> ExpressionFunctions { get; }
         List<string> PrependPath { get; }
         ContainerInfo Container { get; set; }
         List<ContainerInfo> ServiceContainers { get; }
@@ -146,6 +147,7 @@ namespace GitHub.Runner.Worker
         public IList<String> FileTable { get; private set; }
         public StepsContext StepsContext { get; private set; }
         public DictionaryContextData ExpressionValues { get; } = new DictionaryContextData();
+        public IList<IFunctionInfo> ExpressionFunctions { get; } = new List<IFunctionInfo>();
         public bool WriteDebug { get; private set; }
         public List<string> PrependPath { get; private set; }
         public ContainerInfo Container { get; set; }
@@ -274,6 +276,10 @@ namespace GitHub.Runner.Worker
             foreach (var pair in ExpressionValues)
             {
                 child.ExpressionValues[pair.Key] = pair.Value;
+            }
+            foreach (var item in ExpressionFunctions)
+            {
+                child.ExpressionFunctions.Add(pair.Value);
             }
             child._cancellationTokenSource = new CancellationTokenSource();
             child.WriteDebug = WriteDebug;
@@ -577,10 +583,11 @@ namespace GitHub.Runner.Worker
             FileTable = new List<String>(message.FileTable ?? new string[0]);
 
             // Expression functions
-            if (Variables.GetBoolean("System.HashFilesV2") == true)
-            {
-                ExpressionConstants.UpdateFunction<Handlers.HashFiles>("hashFiles", 1, byte.MaxValue);
-            }
+            ExpressionFunctions.Add(new FunctionInfo<AlwaysNode>(PipelineTemplateConstants.Always, 0, 0));
+            ExpressionFunctions.Add(new FunctionInfo<AlwaysNode>(PipelineTemplateConstants.Cancelled, 0, 0));
+            ExpressionFunctions.Add(new FunctionInfo<AlwaysNode>(PipelineTemplateConstants.Failure, 0, 0));
+            ExpressionFunctions.Add(new FunctionInfo<AlwaysNode>(PipelineTemplateConstants.Success, 0, 0));
+            ExpressionFunctions.Add(new FunctionInfo<Handlers.HashFiles>(PipelineTemplateConstants.HashFiles, 1, byte.MaxValue));
 
             // Expression values
             if (message.ContextData?.Count > 0)
