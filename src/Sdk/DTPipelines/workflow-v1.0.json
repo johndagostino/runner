@@ -179,6 +179,25 @@
       "string": {}
     },
 
+    "job-if-result": {
+      "context": [
+        "github",
+        "needs",
+        "always(0,0)",
+        "failure(0,MAX)",
+        "cancelled(0,0)",
+        "success(0,MAX)"
+      ],
+      "one-of": [
+        "null",
+        "boolean",
+        "number",
+        "string",
+        "sequence",
+        "mapping"
+      ]
+    },
+
     "strategy": {
       "context": [
         "github"
@@ -417,6 +436,57 @@
         "hashFiles(1,255)"
       ],
       "string": {}
+    },
+
+    "step-if-result": {
+      "context": [
+        "github",
+        "strategy",
+        "matrix",
+        "steps",
+        "job",
+        "runner",
+        "env",
+        "always(0,0)",
+        "failure(0,0)",
+        "cancelled(0,0)",
+        "success(0,0)",
+        "hashFiles(1,255)"
+      ],
+      "one-of": [
+        "null",
+        "boolean",
+        "number",
+        "string",
+        "sequence",
+        "mapping"
+      ]
+    },
+
+    "step-if-result-in-template": {
+      "context": [
+        "github",
+        "strategy",
+        "matrix",
+        "steps",
+        "inputs",
+        "job",
+        "runner",
+        "env",
+        "always(0,0)",
+        "failure(0,0)",
+        "cancelled(0,0)",
+        "success(0,0)",
+        "hashFiles(1,255)"
+      ],
+      "one-of": [
+        "null",
+        "boolean",
+        "number",
+        "string",
+        "sequence",
+        "mapping"
+      ]
     },
 
     "steps-template-reference": {

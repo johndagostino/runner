@@ -142,7 +142,7 @@ namespace GitHub.Runner.Worker
             // Load the inputs.
             ExecutionContext.Debug("Loading inputs");
             var templateEvaluator = ExecutionContext.ToPipelineTemplateEvaluator();
-            var inputs = templateEvaluator.EvaluateStepInputs(Action.Inputs, ExecutionContext.ExpressionValues);
+            var inputs = templateEvaluator.EvaluateStepInputs(Action.Inputs, ExecutionContext.ExpressionValues, ExecutionContext.ExpressionFunctions);
 
             foreach (KeyValuePair<string, string> input in inputs)
             {
@@ -296,7 +296,7 @@ namespace GitHub.Runner.Worker
             var templateEvaluator = context.ToPipelineTemplateEvaluator();
             try
             {
-                didFullyEvaluate = templateEvaluator.TryEvaluateStepDisplayName(tokenToParse, contextData, out displayName);
+                didFullyEvaluate = templateEvaluator.TryEvaluateStepDisplayName(tokenToParse, contextData, ExecutionContext.ExpressionFunctions, out displayName);
             }
             catch (TemplateValidationException e)
             {

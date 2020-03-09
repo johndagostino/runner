@@ -30,7 +30,9 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
         public const String Include = "include";
         public const String Inputs = "inputs";
         public const String Job = "job";
+        public const String JobIfResult = "job-if-result";
         public const String Jobs = "jobs";
+        public const String Labels = "labels";
         public const String Lfs = "lfs";
         public const String Matrix = "matrix";
         public const String MaxParallel = "max-parallel";
@@ -57,6 +59,7 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
         public const String Shell = "shell";
         public const String Skipped = "skipped";
         public const String StepEnv = "step-env";
+        public const String StepIfResult = "step-if-result";
         public const String Steps = "steps";
         public const String StepsScopeInputs = "steps-scope-inputs";
         public const String StepsScopeOutputs = "steps-scope-outputs";

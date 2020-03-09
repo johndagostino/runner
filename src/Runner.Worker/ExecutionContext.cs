@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using GitHub.Runner.Worker.Container;
+using GitHub.Runner.Worker.Expressions;
 using GitHub.Services.WebApi;
 using GitHub.DistributedTask.Pipelines;
 using GitHub.DistributedTask.Pipelines.ContextData;
@@ -279,7 +280,7 @@ namespace GitHub.Runner.Worker
             }
             foreach (var item in ExpressionFunctions)
             {
-                child.ExpressionFunctions.Add(pair.Value);
+                child.ExpressionFunctions.Add(item);
             }
             child._cancellationTokenSource = new CancellationTokenSource();
             child.WriteDebug = WriteDebug;
@@ -583,11 +584,11 @@ namespace GitHub.Runner.Worker
             FileTable = new List<String>(message.FileTable ?? new string[0]);
 
             // Expression functions
-            ExpressionFunctions.Add(new FunctionInfo<AlwaysNode>(PipelineTemplateConstants.Always, 0, 0));
-            ExpressionFunctions.Add(new FunctionInfo<AlwaysNode>(PipelineTemplateConstants.Cancelled, 0, 0));
-            ExpressionFunctions.Add(new FunctionInfo<AlwaysNode>(PipelineTemplateConstants.Failure, 0, 0));
-            ExpressionFunctions.Add(new FunctionInfo<AlwaysNode>(PipelineTemplateConstants.Success, 0, 0));
-            ExpressionFunctions.Add(new FunctionInfo<Handlers.HashFiles>(PipelineTemplateConstants.HashFiles, 1, byte.MaxValue));
+            ExpressionFunctions.Add(new FunctionInfo<AlwaysFunction>(PipelineTemplateConstants.Always, 0, 0));
+            ExpressionFunctions.Add(new FunctionInfo<CancelledFunction>(PipelineTemplateConstants.Cancelled, 0, 0));
+            ExpressionFunctions.Add(new FunctionInfo<FailureFunction>(PipelineTemplateConstants.Failure, 0, 0));
+            ExpressionFunctions.Add(new FunctionInfo<SuccessFunction>(PipelineTemplateConstants.Success, 0, 0));
+            ExpressionFunctions.Add(new FunctionInfo<HashFilesFunction>(PipelineTemplateConstants.HashFiles, 1, byte.MaxValue));
 
             // Expression values
             if (message.ContextData?.Count > 0)
@@ -903,7 +904,7 @@ namespace GitHub.Runner.Worker
         public static PipelineTemplateEvaluator ToPipelineTemplateEvaluator(this IExecutionContext context)
         {
             var templateTrace = context.ToTemplateTraceWriter();
-            var schema = new PipelineTemplateSchemaFactory().CreateSchema();
+            var schema = PipelineTemplateSchemaFactory.GetSchema();
             return new PipelineTemplateEvaluator(templateTrace, schema, context.FileTable);
         }
 

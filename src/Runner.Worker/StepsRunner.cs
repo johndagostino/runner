@@ -99,7 +99,7 @@ namespace GitHub.Runner.Worker
 
                         // Evaluate and merge action's env block to env context
                         var templateEvaluator = step.ExecutionContext.ToPipelineTemplateEvaluator();
-                        var actionEnvironment = templateEvaluator.EvaluateStepEnvironment(actionStep.Action.Environment, step.ExecutionContext.ExpressionValues, VarUtil.EnvironmentVariableKeyComparer);
+                        var actionEnvironment = templateEvaluator.EvaluateStepEnvironment(actionStep.Action.Environment, step.ExecutionContext.ExpressionValues, step.ExecutionContext.ExpressionFunctions, VarUtil.EnvironmentVariableKeyComparer);
                         foreach (var env in actionEnvironment)
                         {
                             envContext[env.Key] = new StringContextData(env.Value ?? string.Empty);
@@ -248,7 +248,7 @@ namespace GitHub.Runner.Worker
             var templateEvaluator = step.ExecutionContext.ToPipelineTemplateEvaluator();
             try
             {
-                timeoutMinutes = templateEvaluator.EvaluateStepTimeout(step.Timeout, step.ExecutionContext.ExpressionValues);
+                timeoutMinutes = templateEvaluator.EvaluateStepTimeout(step.Timeout, step.ExecutionContext.ExpressionValues, step.ExecutionContext.ExpressionFunctions);
             }
             catch (Exception ex)
             {
@@ -339,7 +339,7 @@ namespace GitHub.Runner.Worker
                 var continueOnError = false;
                 try
                 {
-                    continueOnError = templateEvaluator.EvaluateStepContinueOnError(step.ContinueOnError, step.ExecutionContext.ExpressionValues);
+                    continueOnError = templateEvaluator.EvaluateStepContinueOnError(step.ContinueOnError, step.ExecutionContext.ExpressionValues, step.ExecutionContext.ExpressionFunctions);
                 }
                 catch (Exception ex)
                 {
@@ -391,7 +391,7 @@ namespace GitHub.Runner.Worker
                     var inputs = default(DictionaryContextData);
                     try
                     {
-                        inputs = templateEvaluator.EvaluateStepScopeInputs(scope.Inputs, executionContext.ExpressionValues);
+                        inputs = templateEvaluator.EvaluateStepScopeInputs(scope.Inputs, executionContext.ExpressionValues, executionContext.ExpressionFunctions);
                     }
                     catch (Exception ex)
                     {
@@ -447,7 +447,7 @@ namespace GitHub.Runner.Worker
                     var outputs = default(DictionaryContextData);
                     try
                     {
-                        outputs = templateEvaluator.EvaluateStepScopeOutputs(scope.Outputs, executionContext.ExpressionValues);
+                        outputs = templateEvaluator.EvaluateStepScopeOutputs(scope.Outputs, executionContext.ExpressionValues, executionContext.ExpressionFunctions);
                     }
                     catch (Exception ex)
                     {

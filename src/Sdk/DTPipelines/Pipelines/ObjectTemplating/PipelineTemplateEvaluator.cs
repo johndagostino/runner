@@ -14,6 +14,9 @@ using ITraceWriter = GitHub.DistributedTask.ObjectTemplating.ITraceWriter;
 
 namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
 {
+    /// <summary>
+    /// Evaluates parts of the workflow DOM. For example, a job strategy or step inputs.
+    /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
     public class PipelineTemplateEvaluator
     {
@@ -50,13 +53,14 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
 
         public DictionaryContextData EvaluateStepScopeInputs(
             TemplateToken token,
-            DictionaryContextData contextData)
+            DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions)
         {
             var result = default(DictionaryContextData);
 
             if (token != null && token.Type != TokenType.Null)
             {
-                var context = CreateContext(contextData);
+                var context = CreateContext(contextData, expressionFunctions);
                 try
                 {
                     token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.StepsScopeInputs, token, 0, null, omitHeader: true);
@@ -76,13 +80,14 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
 
         public DictionaryContextData EvaluateStepScopeOutputs(
             TemplateToken token,
-            DictionaryContextData contextData)
+            DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions)
         {
             var result = default(DictionaryContextData);
 
             if (token != null && token.Type != TokenType.Null)
             {
-                var context = CreateContext(contextData);
+                var context = CreateContext(contextData, expressionFunctions);
                 try
                 {
                     token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.StepsScopeOutputs, token, 0, null, omitHeader: true);
@@ -102,13 +107,14 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
 
         public Boolean EvaluateStepContinueOnError(
             TemplateToken token,
-            DictionaryContextData contextData)
+            DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions)
         {
             var result = default(Boolean?);
 
             if (token != null && token.Type != TokenType.Null)
             {
-                var context = CreateContext(contextData);
+                var context = CreateContext(contextData, expressionFunctions);
                 try
                 {
                     token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.BooleanStepsContext, token, 0, null, omitHeader: true);
@@ -129,13 +135,14 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
         public Dictionary<String, String> EvaluateStepEnvironment(
             TemplateToken token,
             DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions,
             StringComparer keyComparer)
         {
             var result = default(Dictionary<String, String>);
 
             if (token != null && token.Type != TokenType.Null)
             {
-                var context = CreateContext(contextData);
+                var context = CreateContext(contextData, expressionFunctions);
                 try
                 {
                     token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.StepEnv, token, 0, null, omitHeader: true);
@@ -155,13 +162,14 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
 
         public Dictionary<String, String> EvaluateStepInputs(
             TemplateToken token,
-            DictionaryContextData contextData)
+            DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions)
         {
             var result = default(Dictionary<String, String>);
 
             if (token != null && token.Type != TokenType.Null)
             {
-                var context = CreateContext(contextData);
+                var context = CreateContext(contextData, expressionFunctions);
                 try
                 {
                     token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.StepWith, token, 0, null, omitHeader: true);
@@ -181,13 +189,14 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
 
         public Int32 EvaluateStepTimeout(
             TemplateToken token,
-            DictionaryContextData contextData)
+            DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions)
         {
             var result = default(Int32?);
 
             if (token != null && token.Type != TokenType.Null)
             {
-                var context = CreateContext(contextData);
+                var context = CreateContext(contextData, expressionFunctions);
                 try
                 {
                     token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.NumberStepsContext, token, 0, null, omitHeader: true);
@@ -207,13 +216,14 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
 
         public JobContainer EvaluateJobContainer(
             TemplateToken token,
-            DictionaryContextData contextData)
+            DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions)
         {
             var result = default(JobContainer);
 
             if (token != null && token.Type != TokenType.Null)
             {
-                var context = CreateContext(contextData);
+                var context = CreateContext(contextData, expressionFunctions);
                 try
                 {
                     token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.Container, token, 0, null, omitHeader: true);
@@ -233,13 +243,14 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
 
         public IList<KeyValuePair<String, JobContainer>> EvaluateJobServiceContainers(
             TemplateToken token,
-            DictionaryContextData contextData)
+            DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions)
         {
             var result = default(List<KeyValuePair<String, JobContainer>>);
 
             if (token != null && token.Type != TokenType.Null)
             {
-                var context = CreateContext(contextData);
+                var context = CreateContext(contextData, expressionFunctions);
                 try
                 {
                     token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.Services, token, 0, null, omitHeader: true);
@@ -260,10 +271,11 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
         public Boolean TryEvaluateStepDisplayName(
             TemplateToken token,
             DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions,
             out String stepName)
         {
             stepName = default(String);
-            var context = CreateContext(contextData);
+            var context = CreateContext(contextData, expressionFunctions);
 
             if (token != null && token.Type != TokenType.Null)
             {
@@ -312,7 +324,9 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
             return true;
         }
 
-        private TemplateContext CreateContext(DictionaryContextData contextData)
+        private TemplateContext CreateContext(
+            DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions)
         {
             var result = new TemplateContext
             {
@@ -353,6 +367,14 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
                 }
             }
 
+            if (expressionFunctions?.Count > 0)
+            {
+                foreach (var function in expressionFunctions)
+                {
+                    result.ExpressionFunctions.Add(function);
+                }
+            }
+
             return result;
         }
 
@@ -362,6 +384,7 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
         private readonly String[] s_contextNames = new[]
         {
             PipelineTemplateConstants.GitHub,
+            PipelineTemplateConstants.Needs,
             PipelineTemplateConstants.Strategy,
             PipelineTemplateConstants.Matrix,
             PipelineTemplateConstants.Secrets,
