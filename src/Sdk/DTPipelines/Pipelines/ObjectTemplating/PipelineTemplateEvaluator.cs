@@ -160,6 +160,33 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
             return result ?? new Dictionary<String, String>(keyComparer);
         }
 
+        public Boolean EvaluateStepIf(
+            TemplateToken token,
+            DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions)
+        {
+            var result = default(Boolean?);
+
+            if (token != null && token.Type != TokenType.Null)
+            {
+                var context = CreateContext(contextData, expressionFunctions);
+                try
+                {
+                    token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.StepIfResult, token, 0, null, omitHeader: true);
+                    context.Errors.Check();
+                    result = PipelineTemplateConverter.ConvertToIfResult(context, token);
+                }
+                catch (Exception ex) when (!(ex is TemplateValidationException))
+                {
+                    context.Errors.Add(ex);
+                }
+
+                context.Errors.Check();
+            }
+
+            return result ?? throw new InvalidOperationException("Step if cannot be null");
+        }
+
         public Dictionary<String, String> EvaluateStepInputs(
             TemplateToken token,
             DictionaryContextData contextData,

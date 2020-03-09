@@ -901,11 +901,14 @@ namespace GitHub.Runner.Worker
             }
         }
 
-        public static PipelineTemplateEvaluator ToPipelineTemplateEvaluator(this IExecutionContext context)
+        public static PipelineTemplateEvaluator ToPipelineTemplateEvaluator(this IExecutionContext context, ObjectTemplating.ITraceWriter traceWriter = null)
         {
-            var templateTrace = context.ToTemplateTraceWriter();
+            if (traceWriter == null)
+            {
+                traceWriter = context.ToTemplateTraceWriter();
+            }
             var schema = PipelineTemplateSchemaFactory.GetSchema();
-            return new PipelineTemplateEvaluator(templateTrace, schema, context.FileTable);
+            return new PipelineTemplateEvaluator(traceWriter, schema, context.FileTable);
         }
 
         public static ObjectTemplating.ITraceWriter ToTemplateTraceWriter(this IExecutionContext context)

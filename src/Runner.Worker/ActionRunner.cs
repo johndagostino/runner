@@ -296,7 +296,7 @@ namespace GitHub.Runner.Worker
             var templateEvaluator = context.ToPipelineTemplateEvaluator();
             try
             {
-                didFullyEvaluate = templateEvaluator.TryEvaluateStepDisplayName(tokenToParse, contextData, ExecutionContext.ExpressionFunctions, out displayName);
+                didFullyEvaluate = templateEvaluator.TryEvaluateStepDisplayName(tokenToParse, contextData, context.ExpressionFunctions, out displayName);
             }
             catch (TemplateValidationException e)
             {
