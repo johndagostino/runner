@@ -12,6 +12,7 @@ using GitHub.DistributedTask.WebApi;
 using GitHub.Runner.Common;
 using GitHub.Runner.Common.Util;
 using GitHub.Runner.Sdk;
+using GitHub.Runner.Worker.Expressions;
 using ObjectTemplating = GitHub.DistributedTask.ObjectTemplating;
 using Pipelines = GitHub.DistributedTask.Pipelines;
 
@@ -65,11 +66,7 @@ namespace GitHub.Runner.Worker
                 }
 
                 var step = jobContext.JobSteps.Dequeue();
-                IStep nextStep = null;
-                if (jobContext.JobSteps.Count > 0)
-                {
-                    nextStep = jobContext.JobSteps.Peek();
-                }
+                var nextStep = jobContext.JobSteps.Count > 0 ? jobContext.JobSteps.Peek() : null;
 
                 Trace.Info($"Processing step: DisplayName='{step.DisplayName}'");
                 ArgUtil.NotNull(step.ExecutionContext, nameof(step.ExecutionContext));
@@ -77,6 +74,13 @@ namespace GitHub.Runner.Worker
 
                 // Start
                 step.ExecutionContext.Start();
+
+                // Expression functions
+                step.ExecutionContext.ExpressionFunctions.Add(new FunctionInfo<AlwaysFunction>(PipelineTemplateConstants.Always, 0, 0));
+                step.ExecutionContext.ExpressionFunctions.Add(new FunctionInfo<CancelledFunction>(PipelineTemplateConstants.Cancelled, 0, 0));
+                step.ExecutionContext.ExpressionFunctions.Add(new FunctionInfo<FailureFunction>(PipelineTemplateConstants.Failure, 0, 0));
+                step.ExecutionContext.ExpressionFunctions.Add(new FunctionInfo<SuccessFunction>(PipelineTemplateConstants.Success, 0, 0));
+                step.ExecutionContext.ExpressionFunctions.Add(new FunctionInfo<HashFilesFunction>(PipelineTemplateConstants.HashFiles, 1, byte.MaxValue));
 
                 // Initialize scope
                 if (InitializeScope(step, scopeInputs))

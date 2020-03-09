@@ -132,6 +132,33 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
             return result ?? false;
         }
 
+        public String EvaluateStepDisplayName(
+            TemplateToken token,
+            DictionaryContextData contextData,
+            IList<IFunctionInfo> expressionFunctions)
+        {
+            var result = default(String);
+
+            if (token != null && token.Type != TokenType.Null)
+            {
+                var context = CreateContext(contextData, expressionFunctions);
+                try
+                {
+                    token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.StringStepsContext, token, 0, null, omitHeader: true);
+                    context.Errors.Check();
+                    result = PipelineTemplateConverter.ConvertToStepDisplayName(context, token);
+                }
+                catch (Exception ex) when (!(ex is TemplateValidationException))
+                {
+                    context.Errors.Add(ex);
+                }
+
+                context.Errors.Check();
+            }
+
+            return result;
+        }
+
         public Dictionary<String, String> EvaluateStepEnvironment(
             TemplateToken token,
             DictionaryContextData contextData,
@@ -295,62 +322,6 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
             return result;
         }
 
-        public Boolean TryEvaluateStepDisplayName(
-            TemplateToken token,
-            DictionaryContextData contextData,
-            IList<IFunctionInfo> expressionFunctions,
-            out String stepName)
-        {
-            stepName = default(String);
-            var context = CreateContext(contextData, expressionFunctions);
-
-            if (token != null && token.Type != TokenType.Null)
-            {
-                // We should only evaluate basic expressions if we are sure we have context on all the Named Values and functions
-                // Otherwise return and use a default name
-                if (token is BasicExpressionToken expressionToken)
-                {
-                    ExpressionNode root = null;
-                    try
-                    {
-                        root = new ExpressionParser().ValidateSyntax(expressionToken.Expression, null) as ExpressionNode;
-                    }
-                    catch (Exception exception)
-                    {
-                        context.Errors.Add(exception);
-                        context.Errors.Check();
-                    }
-                    foreach (var node in root.Traverse())
-                    {
-                        if (node is NamedValue namedValue && !contextData.ContainsKey(namedValue.Name))
-                        {
-                            return false;
-                        }
-                        else if (node is Function function &&
-                            !context.ExpressionFunctions.Any(item => String.Equals(item.Name, function.Name)) &&
-                            !ExpressionConstants.WellKnownFunctions.ContainsKey(function.Name))
-                        {
-                            return false;
-                        }
-                    }
-                }
-
-                try
-                {
-                    token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.StringStepsContext, token, 0, null, omitHeader: true);
-                    context.Errors.Check();
-                    stepName = PipelineTemplateConverter.ConvertToStepDisplayName(context, token);
-                }
-                catch (Exception ex) when (!(ex is TemplateValidationException))
-                {
-                    context.Errors.Add(ex);
-                }
-
-                context.Errors.Check();
-            }
-            return true;
-        }
-
         private TemplateContext CreateContext(
             DictionaryContextData contextData,
             IList<IFunctionInfo> expressionFunctions)
@@ -376,7 +347,7 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
                 }
             }
 
-            // Add named context
+            // Add named values
             if (contextData != null)
             {
                 foreach (var pair in contextData)
@@ -394,6 +365,7 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
                 }
             }
 
+            // Add functions
             if (expressionFunctions?.Count > 0)
             {
                 foreach (var function in expressionFunctions)

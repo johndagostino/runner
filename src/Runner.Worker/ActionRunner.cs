@@ -26,7 +26,7 @@ namespace GitHub.Runner.Worker
     public interface IActionRunner : IStep, IRunnerService
     {
         ActionRunStage Stage { get; set; }
-        Boolean TryEvaluateDisplayName(DictionaryContextData contextData, IExecutionContext context);
+        bool TryEvaluateDisplayName(DictionaryContextData contextData, IExecutionContext context);
         Pipelines.ActionStep Action { get; set; }
     }
 
@@ -293,10 +293,14 @@ namespace GitHub.Runner.Worker
                 return displayName;
             }
             // Try evaluating fully
-            var templateEvaluator = context.ToPipelineTemplateEvaluator();
             try
             {
-                didFullyEvaluate = templateEvaluator.TryEvaluateStepDisplayName(tokenToParse, contextData, context.ExpressionFunctions, out displayName);
+                if (tokenToParse.CheckHasRequiredContext(contextData, context.ExpressionFunctions))
+                {
+                    var templateEvaluator = context.ToPipelineTemplateEvaluator();
+                    displayName = templateEvaluator.EvaluateStepDisplayName(tokenToParse, contextData, context.ExpressionFunctions);
+                    didFullyEvaluate = true;
+                }
             }
             catch (TemplateValidationException e)
             {

@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using GitHub.Runner.Worker.Container;
-using GitHub.Runner.Worker.Expressions;
-using GitHub.Services.WebApi;
+using GitHub.DistributedTask.Expressions2;
 using GitHub.DistributedTask.Pipelines;
 using GitHub.DistributedTask.Pipelines.ContextData;
 using GitHub.DistributedTask.Pipelines.ObjectTemplating;
@@ -17,12 +17,11 @@ using GitHub.DistributedTask.WebApi;
 using GitHub.Runner.Common.Util;
 using GitHub.Runner.Common;
 using GitHub.Runner.Sdk;
+using GitHub.Runner.Worker.Container;
+using GitHub.Services.WebApi;
 using Newtonsoft.Json;
-using System.Text;
-using System.Collections;
 using ObjectTemplating = GitHub.DistributedTask.ObjectTemplating;
 using Pipelines = GitHub.DistributedTask.Pipelines;
-using GitHub.DistributedTask.Expressions2;
 
 namespace GitHub.Runner.Worker
 {
@@ -582,13 +581,6 @@ namespace GitHub.Runner.Worker
 
             // File table
             FileTable = new List<String>(message.FileTable ?? new string[0]);
-
-            // Expression functions
-            ExpressionFunctions.Add(new FunctionInfo<AlwaysFunction>(PipelineTemplateConstants.Always, 0, 0));
-            ExpressionFunctions.Add(new FunctionInfo<CancelledFunction>(PipelineTemplateConstants.Cancelled, 0, 0));
-            ExpressionFunctions.Add(new FunctionInfo<FailureFunction>(PipelineTemplateConstants.Failure, 0, 0));
-            ExpressionFunctions.Add(new FunctionInfo<SuccessFunction>(PipelineTemplateConstants.Success, 0, 0));
-            ExpressionFunctions.Add(new FunctionInfo<HashFilesFunction>(PipelineTemplateConstants.HashFiles, 1, byte.MaxValue));
 
             // Expression values
             if (message.ContextData?.Count > 0)
