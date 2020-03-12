@@ -893,6 +893,11 @@ namespace GitHub.Runner.Worker
             }
         }
 
+        public static IEnumerable<KeyValuePair<string, object>> ToExpressionState(this IExecutionContext context)
+        {
+            return new[] { new KeyValuePair<string, object>(nameof(IExecutionContext), context) };
+        }
+
         public static PipelineTemplateEvaluator ToPipelineTemplateEvaluator(this IExecutionContext context, ObjectTemplating.ITraceWriter traceWriter = null)
         {
             if (traceWriter == null)

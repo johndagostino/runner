@@ -190,13 +190,14 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
         public Boolean EvaluateStepIf(
             TemplateToken token,
             DictionaryContextData contextData,
-            IList<IFunctionInfo> expressionFunctions)
+            IList<IFunctionInfo> expressionFunctions,
+            IEnumerable<KeyValuePair<String, Object>> expressionState)
         {
             var result = default(Boolean?);
 
             if (token != null && token.Type != TokenType.Null)
             {
-                var context = CreateContext(contextData, expressionFunctions);
+                var context = CreateContext(contextData, expressionFunctions, expressionState);
                 try
                 {
                     token = TemplateEvaluator.Evaluate(context, PipelineTemplateConstants.StepIfResult, token, 0, null, omitHeader: true);
@@ -324,7 +325,8 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
 
         private TemplateContext CreateContext(
             DictionaryContextData contextData,
-            IList<IFunctionInfo> expressionFunctions)
+            IList<IFunctionInfo> expressionFunctions,
+            IEnumerable<KeyValuePair<String, Object>> expressionState = null)
         {
             var result = new TemplateContext
             {
@@ -371,6 +373,15 @@ namespace GitHub.DistributedTask.Pipelines.ObjectTemplating
                 foreach (var function in expressionFunctions)
                 {
                     result.ExpressionFunctions.Add(function);
+                }
+            }
+
+            // Add state
+            if (expressionState != null)
+            {
+                foreach (var pair in expressionState)
+                {
+                    result.State[pair.Key] = pair.Value;
                 }
             }
 

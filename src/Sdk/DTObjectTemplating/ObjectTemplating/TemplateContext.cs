@@ -71,6 +71,19 @@ namespace GitHub.DistributedTask.ObjectTemplating
 
         internal TemplateSchema Schema { get; set; }
 
+        internal IDictionary<String, Object> State
+        {
+            get
+            {
+                if (m_state == null)
+                {
+                    m_state = new Dictionary<String, Object>(StringComparer.OrdinalIgnoreCase);
+                }
+
+                return m_state;
+            }
+        }
+
         internal ITraceWriter TraceWriter { get; set; }
 
         private IDictionary<String, Int32> FileIds
@@ -219,5 +232,6 @@ namespace GitHub.DistributedTask.ObjectTemplating
         private IDictionary<String, Object> m_expressionValues;
         private IDictionary<String, Int32> m_fileIds;
         private List<String> m_fileNames;
+        private IDictionary<String, Object> m_state;
     }
 }

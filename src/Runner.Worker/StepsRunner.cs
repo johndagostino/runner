@@ -137,7 +137,7 @@ namespace GitHub.Runner.Worker
                                     {
                                         var templateEvaluator = step.ExecutionContext.ToPipelineTemplateEvaluator(conditionReTestTraceWriter);
                                         var condition = new BasicExpressionToken(null, null, null, step.Condition);
-                                        conditionReTestResult = templateEvaluator.EvaluateStepIf(condition, step.ExecutionContext.ExpressionValues, step.ExecutionContext.ExpressionFunctions);
+                                        conditionReTestResult = templateEvaluator.EvaluateStepIf(condition, step.ExecutionContext.ExpressionValues, step.ExecutionContext.ExpressionFunctions, step.ExecutionContext.ToExpressionState());
                                     }
                                     catch (Exception ex)
                                     {
@@ -180,7 +180,7 @@ namespace GitHub.Runner.Worker
                             {
                                 var templateEvaluator = step.ExecutionContext.ToPipelineTemplateEvaluator(conditionTraceWriter);
                                 var condition = new BasicExpressionToken(null, null, null, step.Condition);
-                                templateEvaluator.EvaluateStepIf(condition, step.ExecutionContext.ExpressionValues, step.ExecutionContext.ExpressionFunctions);
+                                conditionResult = templateEvaluator.EvaluateStepIf(condition, step.ExecutionContext.ExpressionValues, step.ExecutionContext.ExpressionFunctions, step.ExecutionContext.ToExpressionState());
                             }
                             catch (Exception ex)
                             {
