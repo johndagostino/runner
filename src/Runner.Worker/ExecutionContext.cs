@@ -915,6 +915,7 @@ namespace GitHub.Runner.Worker
 
         internal TemplateTraceWriter(IExecutionContext executionContext)
         {
+            ArgUtil.NotNull(executionContext, nameof(executionContext));
             _executionContext = executionContext;
         }
 

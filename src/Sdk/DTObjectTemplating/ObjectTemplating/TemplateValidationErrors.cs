@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.Serialization;
 
 namespace GitHub.DistributedTask.ObjectTemplating
@@ -85,6 +86,23 @@ namespace GitHub.DistributedTask.ObjectTemplating
             if (m_errors.Count > 0)
             {
                 throw new TemplateValidationException(m_errors);
+            }
+        }
+
+        /// <summary>
+        /// Throws <c ref="TemplateValidationException" /> if any errors.
+        /// <param name="prefix">The error message prefix</param>
+        /// </summary>
+        public void Check(String prefix)
+        {
+            if (String.IsNullOrEmpty(prefix))
+            {
+                this.Check();
+            }
+            else if (m_errors.Count > 0)
+            {
+                var message = $"{prefix.Trim()} {String.Join(",", m_errors.Select(e => e.Message))}";
+                throw new TemplateValidationException(message, m_errors);
             }
         }
 
