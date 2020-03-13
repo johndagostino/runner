@@ -162,13 +162,7 @@ namespace GitHub.Runner.Worker
                     string key = input.Key.AssertString("action input name").Value;
                     if (!inputs.ContainsKey(key))
                     {
-                        var evaluateContext = new Dictionary<string, PipelineContextData>(StringComparer.OrdinalIgnoreCase);
-                        foreach (var data in ExecutionContext.ExpressionValues)
-                        {
-                            evaluateContext[data.Key] = data.Value;
-                        }
-
-                        inputs[key] = manifestManager.EvaluateDefaultInput(ExecutionContext, key, input.Value, evaluateContext);
+                        inputs[key] = manifestManager.EvaluateDefaultInput(ExecutionContext, key, input.Value);
                     }
                 }
             }
